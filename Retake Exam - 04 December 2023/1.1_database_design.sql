@@ -1,0 +1,59 @@
+CREATE TABLE IF NOT EXISTS countries (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS customers (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(25) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    gender CHAR(1) CHECK(gender = 'M' OR gender = 'F'),
+    age INTEGER CHECK (age > 0) NOT NULL,
+    phone_number CHAR(10) NOT NULL,
+    country_id INTEGER
+        REFERENCES countries ON DELETE CASCADE ON UPDATE CASCADE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(25) NOT NULL,
+    description VARCHAR(250),
+    recipe TEXT,
+    price NUMERIC(10, 2) CHECK (price > 0) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS feedbacks (
+    id SERIAL PRIMARY KEY,
+    description VARCHAR(255),
+    rate NUMERIC(4, 2) CHECK (rate BETWEEN 0 AND 10),
+    product_id INTEGER
+        REFERENCES products ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    customer_id INTEGER
+        REFERENCES customers ON DELETE CASCADE ON UPDATE CASCADE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS distributors (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(25) UNIQUE NOT NULL,
+    address VARCHAR(30) NOT NULL,
+    summary VARCHAR(200) NOT NULL,
+    country_id INTEGER
+        REFERENCES countries ON DELETE CASCADE ON UPDATE CASCADE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ingredients (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(30) NOT NULL,
+    description VARCHAR(200),
+    country_id INTEGER
+        REFERENCES countries ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    distributor_id INTEGER
+        REFERENCES distributors ON DELETE CASCADE ON UPDATE CASCADE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS products_ingredients (
+    product_id INTEGER
+        REFERENCES products ON DELETE CASCADE ON UPDATE CASCADE,
+    ingredient_id INTEGER
+        REFERENCES ingredients ON DELETE CASCADE ON UPDATE CASCADE
+);
