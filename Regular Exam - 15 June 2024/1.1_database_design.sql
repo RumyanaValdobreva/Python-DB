@@ -1,0 +1,50 @@
+CREATE TABLE IF NOT EXISTS accounts (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(30) UNIQUE NOT NULL,
+    password VARCHAR(30) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    gender CHAR(1) CHECK (gender = 'M' OR gender = 'F') NOT NULL,
+    age INTEGER NOT NULL,
+    job_title VARCHAR(40) NOT NULL,
+    ip VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS addresses (
+    id SERIAL PRIMARY KEY,
+    street VARCHAR(30) NOT NULL,
+    town VARCHAR(30) NOT NULL,
+    country VARCHAR(30) NOT NULL,
+    account_id INTEGER
+        REFERENCES accounts ON DELETE CASCADE ON UPDATE CASCADE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS photos (
+    id SERIAL PRIMARY KEY,
+    description TEXT,
+    capture_date TIMESTAMP NOT NULL,
+    views INTEGER DEFAULT 0 CHECK (views >= 0) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id SERIAL PRIMARY KEY,
+    content VARCHAR(255) NOT NULL,
+    published_on TIMESTAMP NOT NULL,
+    photo_id INTEGER
+        REFERENCES photos ON DELETE CASCADE ON UPDATE CASCADE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS accounts_photos (
+    account_id INTEGER
+        REFERENCES accounts ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    photo_id INTEGER
+        REFERENCES photos ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    PRIMARY KEY (account_id, photo_id)
+);
+
+CREATE TABLE IF NOT EXISTS likes (
+    id SERIAL PRIMARY KEY,
+    photo_id INTEGER
+        REFERENCES photos ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    account_id INTEGER
+        REFERENCES accounts ON DELETE CASCADE ON UPDATE CASCADE NOT NULL
+);
